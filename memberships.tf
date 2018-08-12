@@ -5,16 +5,6 @@ resource "github_membership" "2echoi" {
   role     = "member"
 }
 
-resource "github_membership" "AndrewGibson27" {
-  username = "AndrewGibson27"
-  role     = "member"
-}
-
-resource "github_membership" "carenvaleria" {
-  username = "carenvaleria"
-  role     = "member"
-}
-
 resource "github_membership" "chanduvkp" {
   username = "chanduvkp"
   role     = "member"
@@ -27,10 +17,5 @@ resource "github_membership" "rgreinho" {
 
 resource "github_membership" "Toughee" {
   username = "Toughee"
-  role     = "member"
-}
-
-resource "github_membership" "UX-Chris" {
-  username = "UX-Chris"
   role     = "member"
 }
