@@ -63,10 +63,6 @@ jobs:
       - run:
           name: terraform plan
           command: |
-            printenv | sort
-            echo "Org: $GITHUB_ORGANIZATION"
-            echo "Token: ${GITHUB_TOKEN}"
-            echo "========"
             terraform plan -out=github.tfplan
       - persist_to_workspace:
           root: *working_directory
