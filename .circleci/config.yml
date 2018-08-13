@@ -1,0 +1,102 @@
+version: 2
+
+references:
+
+base_image: &base_image
+  hashicorp/terraform:light
+
+working_directory: &working_directory
+  ~/project
+
+default_config: &default_config
+  docker:
+    - image: *base_image
+  working_directory: *working_directory
+
+repo_cache_key: &repo_cache_key
+  repo-{{ .Branch }}-{{ .Revision }}
+
+# Step to restore repository from cache
+restore_repo: &restore_repo
+  restore_cache:
+    key: *repo_cache_key
+
+save_repo: &save_repo
+  save_cache:
+    key: *repo_cache_key
+    paths:
+      - *working_directory
+
+terraform_init: &terraform_init
+  run:
+    name: terraform init
+    command: terraform init
+
+apply_job: &apply_job
+  <<: *default_config
+  steps:
+    - *restore_repo
+    - *terraform_init
+    - attach_workspace:
+        at: *working_directory
+    - run:
+        name: terraform apply
+        command: |
+          terraform apply --auto-approve github.tfplan
+
+jobs:
+
+  lint:
+    <<: *default_config
+    steps:
+      - checkout
+      - run:
+          name: terraform fmt
+          command: terraform fmt -check=true
+      - *save_repo
+
+  plan:
+    <<: *default_config
+    steps:
+      - *restore_repo
+      - *terraform_init
+      - run:
+          name: terraform plan
+          command: |
+            printenv | sort
+            echo "Org: $GITHUB_ORGANIZATION"
+            echo "Token: ${GITHUB_TOKEN}"
+            echo "========"
+            terraform plan -out=github.tfplan
+      - persist_to_workspace:
+          root: *working_directory
+          paths:
+            - github.tfplan
+
+  apply-with-approval:
+    <<: *apply_job
+
+workflows:
+  version: 2
+  lint_plan_approve_apply:
+    jobs:
+      - lint
+      - plan:
+          requires:
+            - lint
+          filters:
+            branches:
+              only: master
+      - approve:
+          type: approval
+          requires:
+            - plan
+          filters:
+            branches:
+              only: master
+      - apply-with-approval:
+          requires:
+            - approve
+          filters:
+            branches:
+              only: master
