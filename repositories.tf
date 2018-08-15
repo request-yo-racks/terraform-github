@@ -88,6 +88,21 @@ resource "github_repository" "landing-page" {
   archived           = false
 }
 
+resource "github_repository" "terraform-github" {
+  name               = "terraform-github"
+  description        = "Manage RYR GitHub organization as code"
+  homepage_url       = ""
+  private            = false
+  has_issues         = true
+  has_wiki           = true
+  allow_merge_commit = false
+  allow_squash_merge = true
+  allow_rebase_merge = true
+  has_downloads      = true
+  default_branch     = "master"
+  archived           = false
+}
+
 resource "github_repository" "web" {
   name               = "web"
   description        = "Simplify the bike rack request process for the city of Austin"

@@ -77,12 +77,7 @@ workflows:
   lint_plan_approve_apply:
     jobs:
       - lint
-      - plan:
-          requires:
-            - lint
-          filters:
-            branches:
-              only: master
+      - plan
       - approve:
           type: approval
           requires:
