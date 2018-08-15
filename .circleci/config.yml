@@ -68,7 +68,7 @@ jobs:
           paths:
             - github.tfplan
 
-  apply-with-approval:
+  apply:
     <<: *apply_job
 
 workflows:
@@ -77,10 +77,10 @@ workflows:
     jobs:
       - lint
       - plan
-      - apply-with-approval:
+      - apply:
           requires:
             - lint
-            - approve
+            - plan
           filters:
             branches:
               only: master
